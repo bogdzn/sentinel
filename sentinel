@@ -3,7 +3,7 @@
 send_message () { curl -i - H "Accept: application/json" -X POST -H "Content-Type: application/json" -data :"{ \"content\": ${1} }" "${WEBHOOK_URL}" ; }
 get_git_update () {
     cd "${1}" || exit
-    UPDATED_BRANCHES=$(git fetch --all | grep -o "origin/\S\+")
+    UPDATED_BRANCHES=$(git fetch --all 2>&1 | grep -o "origin/\S\+")
         for BRANCH in ${UPDATED_BRANCHES}
         do
             git checkout "${BRANCH}" --quiet
