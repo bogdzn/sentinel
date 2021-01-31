@@ -5,7 +5,7 @@ LOGPATH="/home/${USER}/sentinel.log"
 WH_NAME="Captain Hook"
 
 load_json () { printf "{\"username\": \"${WH_NAME}\",\"content\": \"$1\",\"tts:\" false}\n" > "${JSON_PATH}" ; }
-log () { echo "$1" > ${LOGPATH} ; }
+log () { echo "$1" >> ${LOGPATH} ; }
 send_message () { curl -X POST -H "Content-Type: application/json" -d @"${JSON_PATH}" "${WEBHOOK_URL}" 2> "${LOGPATH}" ; }
 get_git_update () {
     cd "/home/${USER}/${1}" 2>/dev/null && \
