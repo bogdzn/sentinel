@@ -1,0 +1,36 @@
+#!/bin/bash
+
+LOGPATH="~/sentinel.log"
+WH_NAME="Captain Hook"
+
+check_git_update () {
+    cd "$1" 2>/dev/null && \
+        git fetch --all --quiet && \
+        git log --pretty=oneline origin/master.. && \
+        git pull --all --quiet
+}
+
+load_json () { printf "{\"username\": \"$WH_NAME\",\"content\": \"$1\",\"tts:\" false}\n" > "$JSON_PATH" ; }
+log () { echo "$1" > ~/sentinel.log ; }
+send_message () { curl -X POST -H "Content-Type: application/json" -d @"$JSON_PATH" "$WEBHOOK_URL" 2> "$LOGPATH" ; }
+
+
+log "FETCHING DATA FOR "$#" -- "$now""
+log "webhook url:$WEBHOOK_URL"
+log "JSON PATH SET TO "$JSON_PATH""
+log ""
+
+for var in "$@"
+do
+    log "Fetching data for $var..."
+    FETCH_RESULT=$(get_git_update $var) 2> $LOGPATH
+    log "got:"
+    log "$FETCH_RESULT"
+    load_json "$FETCH_RESULT"
+    log "sending message..."
+    send_message
+done
+
+log "DONE"
+log "-------------------------------------"
+log ""
