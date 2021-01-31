@@ -1,12 +1,10 @@
 #!/bin/bash
 
 JSON_PATH="/home/${USER}/sentinel/"
-LOGPATH="/home/${USER}/sentinel.log"
+LOGPATH="/home/${USER}/last_sentinel_run.log"
 WH_NAME="Captain Hook"
-ARGS="${#}"
 
 load_json () { printf "{\"username\": \"${WH_NAME}\",\"content\": \"$1\",\"tts:\" false}\n" > "${JSON_PATH}" ; }
-log () { echo "${1}" >> ${LOGPATH} ; }
 send_message () { curl -X POST -H "Content-Type: application/json" -d @"${JSON_PATH}" "${WEBHOOK_URL}" 2> "${LOGPATH}" ; }
 get_git_update () {
     cd "/home/${USER}/${1}" 2>/dev/null && \
@@ -15,16 +13,15 @@ get_git_update () {
         git pull --all --quiet; cd ..
 }
 
-log "FETCHING DATA FOR "${ARGS}" -- "${now}"" && log ""
-cd /home/${USER}/directories
-for var in "${@}"
-do
-    log "Fetching data for $var..."
-    FETCH_RESULT=$(get_git_update $var) 2> ${LOGPATH}
-    if [ "${FETCH_RESULT}" != "" ]; then
-        load_json "${FETCH_RESULT}"
-        log "sending message..."
-        send_message
-    fi
-done
-log "DONE" && log "-------------------------------------"
+{
+    echo "FETCHING DATA FOR "${@}" -- "$(date)""
+    cd /home/${USER}/directories
+    for var in "${@}"
+    do
+        echo "Fetching data for $var..."
+        FETCH_RESULT=$(get_git_update $var) 2> ${LOGPATH}
+        if [ "${FETCH_RESULT}" != "" ]; then
+            load_json "${FETCH_RESULT}" && send_message
+        fi
+    done
+    echo "-------------------------------------" } > "${LOGPATH}"
