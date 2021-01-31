@@ -11,11 +11,11 @@ check_git_update () {
     cd "/home/${USER}/${1}" 2>/dev/null && \
         git fetch --all --quiet && \
         git log --pretty=oneline origin/master.. && \
-        git pull --all --quiet
+        git pull --all --quiet; cd ..
 }
 
 log "FETCHING DATA FOR "${#}" -- "${now}"" && log ""
-cd /home/${USER}/sentinel
+cd /home/${USER}/directories
 for var in "${@}"
 do
     log "Fetching data for $var..."
