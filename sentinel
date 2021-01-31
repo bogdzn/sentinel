@@ -1,6 +1,6 @@
 #!/bin/bash
 
-send_message () { curl -i - H "Accept: application/json" -X POST -H "Content-Type: application/json" -data :"{ \"content\": ${1} }" "${WEBHOOK_URL}" ; }
+send_message () { curl -i -H "Accept: application/json" -X POST -H "Content-Type: application/json" -data :"{ \"content\": ${1} }" "${WEBHOOK_URL}" ; }
 get_git_update () {
     cd "${1}" || exit
     UPDATED_BRANCHES=$(git fetch --all 2>&1 | grep -o "origin/\S\+")
@@ -9,9 +9,9 @@ get_git_update () {
             git checkout "${BRANCH}" --quiet
             echo "On branch ${BRANCH}:"
             git log --pretty=format:"%h%x09%an%x09%ad%x09%s" origin/master.. && \
+            git checkout master --quiet
             git pull --all --quiet
             echo ""
-            git checkout master --quiet
         done; cd ..
     }
 
