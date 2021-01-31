@@ -4,7 +4,7 @@ JSON_PATH="/home/${USER}/sentinel/"
 WH_NAME="Captain Hook"
 
 load_json () { printf "{\"username\": \"${WH_NAME}\",\"content\": \"${1}\",\"tts:\" false}\n" > "${JSON_PATH}" ; }
-send_message () { curl -X POST -H "Content-Type: application/json" -d @"${JSON_PATH}" "${WEBHOOK_URL}" 2> "${LOGPATH}" ; }
+send_message () { curl -X POST -H "Content-Type: application/json" -d @"${JSON_PATH}" "${WEBHOOK_URL}" ; }
 get_git_update () {
     cd "/home/${USER}/${1}" 2>/dev/null && \
         git fetch --all --quiet && \
@@ -19,7 +19,7 @@ do
     echo "Fetching data for ${DIR_PATH}..."
     FETCH_RESULT=$(get_git_update ${DIR_PATH}) 2>&1
     if [ "${FETCH_RESULT}" != "" ]; then
-        load_json "${FETCH_RESULT}" && send_message
+        load_json "New commits for ${DIR_PATH}:\n${FETCH_RESULT}" && send_message
     else echo "Nothing has been sent!"
     fi
 done
