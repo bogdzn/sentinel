@@ -1,15 +1,17 @@
 #!/bin/bash
 
-send_message () { curl -i - H "Accept: application/json" -X POST -H "Content-Type: application/json" -data :"{ \"content\": ${FETCH_RESULT} }" "${WEBHOOK_URL}" ; }
+send_message () { curl -i - H "Accept: application/json" -X POST -H "Content-Type: application/json" -data :"{ \"content\": ${1} }" "${WEBHOOK_URL}" ; }
 get_git_update () {
-    cd "/home/directories/${USER}/${1}" 2>/dev/null && \
-        UPDATED_BRANCHES=$(git fetch --all | grep -o "origin/\S\+")
+    cd "${1}" || exit
+    UPDATED_BRANCHES=$(git fetch --all | grep -o "origin/\S\+")
         for BRANCH in ${UPDATED_BRANCHES}
         do
-            git checkout "${BRANCH}"
-            git log --pretty=oneline origin/master.. && \
+            git checkout "${BRANCH}" --quiet
+            echo "On branch ${BRANCH}:"
+            git log --pretty=format:"%h%x09%an%x09%ad%x09%s" origin/master.. && \
             git pull --all --quiet
-            git checkout master
+            echo ""
+            git checkout master --quiet
         done; cd ..
     }
 
@@ -20,8 +22,8 @@ do
     echo "Fetching data for ${DIR_PATH}..."
     FETCH_RESULT=$(get_git_update "${DIR_PATH}") 2>&1
     if [ "${FETCH_RESULT}" != "" ]; then
-        FETCH_RESULT="New commits for ${DIR_PATH}:\n${FETCH_RESULT}"
-        send_message
+        send_message "New commits for ${DIR_PATH}:"
+        send_message "${FETCH_RESULT}"
     else echo "Nothing has been sent!"
     fi
 done
