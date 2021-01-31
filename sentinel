@@ -6,7 +6,7 @@ WH_NAME="Captain Hook"
 load_json () { printf "{\"username\": \"${WH_NAME}\",\"content\": \"${1}\",\"tts:\" false}\n" > "${JSON_PATH}" ; }
 send_message () { curl -X POST -H "Content-Type: application/json" -d @"${JSON_PATH}" "${WEBHOOK_URL}" ; }
 get_git_update () {
-    cd "/home/${USER}/${1}" 2>/dev/null && \
+    cd "/home/directories/${USER}/${1}" 2>/dev/null && \
         git fetch --all --quiet && \
         git log --pretty=oneline origin/master.. && \
         git pull --all --quiet; cd ..
