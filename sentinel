@@ -9,6 +9,7 @@ get_git_update () {
             git checkout "${BRANCH}"
             git log --pretty=oneline origin/master.. && \
             git pull --all --quiet
+            git checkout master
         done; cd ..
     }
 
