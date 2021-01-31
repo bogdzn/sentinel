@@ -3,9 +3,10 @@
 JSON_PATH="/home/${USER}/sentinel/"
 LOGPATH="/home/${USER}/sentinel.log"
 WH_NAME="Captain Hook"
+ARGS="${#}"
 
 load_json () { printf "{\"username\": \"${WH_NAME}\",\"content\": \"$1\",\"tts:\" false}\n" > "${JSON_PATH}" ; }
-log () { echo "$1" >> ${LOGPATH} ; }
+log () { echo "${1}" >> ${LOGPATH} ; }
 send_message () { curl -X POST -H "Content-Type: application/json" -d @"${JSON_PATH}" "${WEBHOOK_URL}" 2> "${LOGPATH}" ; }
 get_git_update () {
     cd "/home/${USER}/${1}" 2>/dev/null && \
@@ -14,7 +15,7 @@ get_git_update () {
         git pull --all --quiet; cd ..
 }
 
-log "FETCHING DATA FOR "${#}" -- "${now}"" && log ""
+log "FETCHING DATA FOR "${ARGS}" -- "${now}"" && log ""
 cd /home/${USER}/directories
 for var in "${@}"
 do
@@ -26,5 +27,4 @@ do
         send_message
     fi
 done
-log "DONE"
-log "-------------------------------------"
+log "DONE" && log "-------------------------------------"
