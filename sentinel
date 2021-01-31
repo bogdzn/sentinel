@@ -3,7 +3,7 @@
 JSON_PATH="/home/${USER}/sentinel.json"
 WEBHOOK_NAME="Captain Hook"
 
-load_json () { echo "{\"username\": \"${WEBHOOK_NAME}\",\"content\": \"${1}\",\"tts:\" false}" > "${JSON_PATH}" ; }
+load_json () { echo "{\"username\": \"${WEBHOOK_NAME}\",\"content\": \"${1}\",\"tts\": false}" > "${JSON_PATH}" ; }
 send_message () { curl -X POST -H "Content-Type: application/json" -d @"${JSON_PATH}" "${WEBHOOK_URL}" ; }
 get_git_update () {
     cd "/home/directories/${USER}/${1}" 2>/dev/null && \
