@@ -12,18 +12,16 @@ send_message () {
 }
 
 add_backticks () {
-       	printf " \`" >> ${JSON_PATH} && printf " \`" >> ${JSON_PATH} && \
-	printf " \`" >> ${JSON_PATH} 
+       	printf \` >> ${JSON_PATH} && printf \` >> ${JSON_PATH} && \
+	printf \` >> ${JSON_PATH} 
 }
 
 load_json () {
 	echo "{" > ${JSON_PATH}
 	echo "\"content\": \"${1}" >> "${JSON_PATH}" && add_backticks	
-
-	echo "${2}" | while IFS= read -r line; do
-		echo "${line}" >> "${JSON_PATH}"
-	done
-
+	while IFS= read -r line; do
+		echo "${line}" >> ${JSON_PATH}
+	done <<< "${2}"
 	add_backticks && printf " \" \n}\n" >> "${JSON_PATH}"
 }
 
@@ -33,8 +31,9 @@ get_git_update () {
         for BRANCH in ${UPDATED_BRANCHES}
         do
             git checkout "${BRANCH}" --quiet
-            echo "On branch ${BRANCH}:"
-	    git log --pretty=oneline origin/master.. && \
+            echo "[${BRANCH}] "
+	    echo ""
+	    git log -n 10 --pretty=format:"%h %an %ad %s\n" origin/master.. && \
             git checkout master --quiet
             git pull --all --quiet
             echo ""
@@ -49,11 +48,7 @@ do
     echo "Fetching data for ${DIR_PATH}..."
     FETCH_RESULT=$(get_git_update "${DIR_PATH}") 2>&1
     if [ "${FETCH_RESULT}" != "" ]; then
-	    echo "GOT: ${FETCH_RESULT}"
-	    
-	    load_json "new commits for ${DIR_PATH}:" ${FETCH_RESULT} 
-	    
-	    cat ${JSON_PATH} 
+	    load_json "new commits for ${DIR_PATH}:" "${FETCH_RESULT}" 
 	    send_message 
     else echo "Nothing has been sent!"
     fi
