@@ -1,9 +1,7 @@
 #!/bin/bash
 
 send_message () {
-    while IFS= read -r line; do
-        curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST --data "{ \"content\": \"${line}\" }" "${WEBHOOK_URL}"
-    done <<< "{$1}"
+    curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST --data "{ \"content\": \" ${1} \" }" "${WEBHOOK_URL}"
 }
 
 get_git_update () {
@@ -29,7 +27,7 @@ do
     FETCH_RESULT=$(get_git_update "${DIR_PATH}") 2>&1
     if [ "${FETCH_RESULT}" != "" ]; then
         send_message "New commits for ${DIR_PATH}:"
-        send_message "${FETCH_RESULT}"
+        send_message "```${FETCH_RESULT}```"
     else echo "Nothing has been sent!"
     fi
 done
