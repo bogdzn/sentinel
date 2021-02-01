@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 
-JSON_PATH=/home/"${USER}"/sentinel/jsonFile.json
+JSON_PATH=/home/"${USER}"/jsonFile.json
 
-send_message () {
-    curl -i \
-        -H "Accept: application/json" \
-        -H "Content-Type: application/json" \
-        -X POST \
-        -d @"${JSON_PATH}" \
-        "${WEBHOOK_URL}"
+send_message () { curl -i -H "Accept: application/json" \
+        -H "Content-Type: application/json" -X POST \
+        -d @"${JSON_PATH}" "${WEBHOOK_URL}"
 }
 
 add_backticks () { printf \` >> "${JSON_PATH}" && \
@@ -19,32 +15,24 @@ load_json () {
     echo "\"content\": \"${1}" >> "${JSON_PATH}" && add_backticks
     while IFS= read -r line; do
         echo "${line}" >> "${JSON_PATH}"
-    done <<< "${2}"
-    add_backticks && printf " \" \n}\n" >> "${JSON_PATH}"
+    done <<< "${2}" && add_backticks && printf " \" \n}\n" >> "${JSON_PATH}"
 }
 
 get_git_update () {
     cd "${1}" || exit
     UPDATED_BRANCHES=$(git fetch --all 2>&1 | grep -o "origin/\S\+")
-    for BRANCH in ${UPDATED_BRANCHES}
-    do
+    for BRANCH in ${UPDATED_BRANCHES}; do
         git checkout "${BRANCH}" --quiet
-        echo "[${BRANCH}] "
-        echo ""
-        git log -n 10 --pretty=format:"%h %an %ad %s\n" origin/master..
-        git checkout master --quiet
-        git pull --all --quiet
-        echo ""
+        git log -n 10 --pretty=format:"[${BRANCH}] %h %an %ad %s\n" origin/master..
+        git checkout master --quiet && git pull --all --quiet && echo
     done; cd ..
 }
 
-echo "FETCHING DATA FOR ${*} -- $(date)"
 cd /home/"${USER}"/directories || exit
 for DIR_PATH in "${@}"
 do
-    echo "Fetching data for ${DIR_PATH}..."
     FETCH_RESULT=$(get_git_update "${DIR_PATH}") 2>&1
-    if [ "${FETCH_RESULT}" != "" ]; then
-        load_json "new commits for ${DIR_PATH}:" "${FETCH_RESULT}" && send_message
-    fi
+    [ "${FETCH_RESULT}" != "" ] && \
+        load_json "new commits for ${DIR_PATH}:" "${FETCH_RESULT}" && \
+        send_message 2>/dev/null
 done
