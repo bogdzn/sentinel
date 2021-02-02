@@ -9,6 +9,8 @@ But, thanks to a bit of `curl` magic, and a clever use of `git log`, I managed t
 
 Long story short, use Github Actions if you can, but this might help you too !
 
+![Example](./.github/screen.png)
+
 ## How do I use it ?
 
 You can set up your sentinel instance on a Raspberry Pi, or a cheap VPS like me.
