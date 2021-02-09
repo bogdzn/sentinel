@@ -24,7 +24,8 @@ get_git_update () {
     UPDATED_BRANCHES=$(git fetch --all 2>&1 | grep -o "origin/\S\+")
     for BRANCH in ${UPDATED_BRANCHES}; do
         git checkout "${BRANCH}" --quiet
-	git log -n 5 --pretty=format:"[$(echo ${BRANCH} | cut -c 7-)] %h from %an @ %ad: %s\n" origin/master..
+	git log -n 5 --pretty=format:"[$(echo "${BRANCH}" \
+    | cut -c 7-)] %h from %an @ %ad: %s\n" origin/master..
         git checkout master --quiet && echo
     done; git pull --all --quiet
 }
