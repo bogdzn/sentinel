@@ -22,7 +22,7 @@ You also need to make sure the `sentinel` script is copied to a directory presen
 Now, create a directory in your `$HOME` named `directories`, and copy there every repository you want to watch.
 You can now set a new cronjob. For instance, to run every ten minutes, like so:
 ```cronjob
-10 * * * * sentinel $(ls /home/"${USER}"/directories)
+10 * * * * echo "/home/${USER}" | sentinel $(ls /home/"${USER}"/directories)
 ```
 
 ## TO-DO
