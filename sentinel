@@ -25,7 +25,7 @@ get_git_update () {
     for BRANCH in ${UPDATED_BRANCHES}; do
         git checkout "${BRANCH}" --quiet
 	git log -n 5 --pretty=format:"[$(echo "${BRANCH}" \
-    | cut -c 8-)] %an @ %ad: %s #%h\n" origin/master..
+    | cut -c 8-)] %an @ %ad: %s\n" origin/master..
         git checkout master --quiet && echo
     done; git pull --all --quiet
 }
