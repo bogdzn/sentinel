@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-JSON_PATH=/home/"${USER}"/jsonFile.json
+BASEDIR=$(read -r val; echo "${val}")
+JSON_PATH="${BASEDIR}"/jsonFile.json
 
 send_message () { curl -i -H "Accept: application/json" \
         -H "Content-Type: application/json" -X POST \
@@ -28,7 +29,7 @@ get_git_update () {
     done; cd .. ; git pull --all --quiet
 }
 
-cd /home/"${USER}"/directories || exit
+cd "${BASEDIR}"/directories || exit
 for DIR_PATH in "${@}"
 do
     FETCH_RESULT=$(get_git_update "${DIR_PATH}") 2>&1
